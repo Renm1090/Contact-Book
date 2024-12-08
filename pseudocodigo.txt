@@ -1,0 +1,226 @@
+Estructura Contacto:
+    nombre: Cadena de caracteres
+    telefono: Cadena de caracteres
+    correo: Cadena de caracteres
+Fin Estructura 
+
+Función convertirAMinusculas(str):
+    Para cada caracter en str:
+        convertir caracter a minúscula
+    Fin Para
+Fin Función
+
+Función escanearNombre(nombre):
+    i = 0
+    Mientras (caracter = leer caracter) no sea '\n':
+        nombre[i] = caracter
+        i = i + 1
+    Fin Mientras
+    nombre[i] = '\0'
+Fin Función
+
+Función verificarInexistenciaEnArchivo(str):
+    archivo = abrir "contactos.txt" en modo lectura
+    Si archivo es NULL:
+        Retornar 2 // Error al abrir el archivo
+    Fin Si
+
+    encontrado = Falso
+    Mientras (linea = leer línea de archivo) no sea NULL:
+        eliminar salto de línea de linea
+        Si linea es igual a str:
+            encontrado = Verdadero
+            Romper
+        Fin Si
+        leer siguiente línea (teléfono)
+        leer siguiente línea (correo)
+    Fin Mientras
+    cerrar archivo
+
+    Si encontrado:
+        Escribir "Un contacto con este elemento ya existe. Ingrese 0 para intentarlo de nuevo o 1 para salir."
+        opción = leer entrada
+        Si opción es "1":
+            Retornar 0 // Salir
+        Fin Si
+        Retornar 1 // Intentar de nuevo
+    Fin Si
+
+    Retornar 2 // No encontrado
+Fin Función
+
+Función esTelefonoValido(telefono):
+    Si longitud de telefono no es igual a 10:
+        Retornar 0 // No válido
+    Fin Si
+    Para i desde 0 hasta 9:
+        Si telefono[i] no es un dígito:
+            Retornar 0 // No válido
+        Fin Si
+    Fin Para
+    Retornar 1 // Válido
+Fin Función
+
+Función agregarContacto():
+    limpiar pantalla
+    nuevo: Contacto
+    Escribir "--- AGREGAR CONTACTO ---"
+    Escribir "Introduce los datos del contacto:"
+
+    Mientras Verdadero:
+        Escribir "Nombre: "
+        limpiar buffer
+        escanearNombre(nuevo.nombre)
+        convertirAMinusculas(nuevo.nombre)
+        Si longitud de nuevo.nombre es 0:
+            Escribir "El nombre no puede estar vacío. Inténtalo de nuevo."
+            continuar
+        Fin Si
+        resultado = verificarInexistenciaEnArchivo(nuevo.nombre)
+        Si resultado es 0:
+            Retornar // Salir
+        Sino Si resultado es 2:
+            Romper
+        Fin Si
+    Fin Mientras
+
+    Mientras Verdadero:
+        Escribir "Telefono: "
+        leer nuevo.telefono
+        Si no esTelefonoValido(nuevo.telefono):
+            Escribir "El teléfono debe tener 10 dígitos. Inténtalo de nuevo."
+            continuar
+        Fin Si
+        resultado = verificarInexistenciaEnArchivo(nuevo.telefono)
+        Si resultado es 0:
+            Retornar // Salir
+        Sino Si resultado es 2:
+            Romper
+        Fin Si
+    Fin Mientras
+
+    Mientras Verdadero:
+        Escribir "Correo: "
+        leer nuevo.correo
+        Si '@' no está en nuevo.correo:
+            Escribir "El correo debe contener un '@'. Inténtalo de nuevo."
+            continuar
+        Fin Si
+        resultado = verificarInexistenciaEnArchivo(nuevo.correo)
+        Si resultado es 0:
+            Retornar // Salir
+        Sino Si resultado es 2:
+            Romper
+        Fin Si
+    Fin Mientras
+
+    archivo2 = abrir "contactos.txt" en modo append
+    Si archivo2 es NULL:
+        Escribir "Error al abrir el archivo."
+        Retornar
+    Fin Si
+
+    escribir en archivo2: nuevo.nombre, nuevo.telefono, nuevo.correo
+    cerrar archivo2
+    Escribir "Contacto agregado exitosamente."
+Fin Función
+
+Función leerContactos():
+    limpiar pantalla
+    archivo = abrir "contactos.txt" en modo lectura
+    Si archivo es NULL:
+        Escribir "No hay contactos guardados."
+        Retornar
+    Fin Si
+
+    Escribir "LISTA DE CONTACTOS"
+    Mientras (linea = leer línea de archivo) no sea NULL:
+        Escribir "Nombre: ", linea
+        leer siguiente línea (teléfono)
+        Escribir "Telefono: ", linea
+        leer siguiente línea (correo)
+        Escribir "Correo: ", linea
+        Escribir nueva línea
+    Fin Mientras
+    cerrar archivo
+    esperar entrada del usuario
+Fin Función
+
+Función buscarContacto():
+    limpiar pantalla
+    Escribir "BUSCAR CONTACTO"
+    Escribir "Introduce el nombre del contacto a buscar:"
+    nombre: Cadena de caracteres
+    limpiar buffer
+    escanearNombre(nombre)
+    convertirAMinusculas(nombre)
+
+    archivo = abrir "contactos.txt" en modo lectura
+    Si archivo es NULL:
+        Escribir "No hay contactos guardados."
+        Retornar
+    Fin Si
+
+    linea: Cadena de caracteres
+    encontrado = Falso
+    limpiar pantalla
+    Mientras (linea = leer línea de archivo) no sea NULL:
+        nombreContacto: Cadena de caracteres
+        copiar linea a nombreContacto
+        convertirAMinusculas(nombreContacto)
+
+        Si nombreContacto contiene nombre:
+            Escribir "Contacto encontrado:"
+            Escribir "Nombre: ", linea
+            leer siguiente línea (telefono)
+            Escribir "Telefono: ", linea
+            leer siguiente línea (correo)
+            Escribir "Correo: ", linea
+            encontrado = Verdadero
+            Romper
+        Fin Si
+    Fin Mientras
+
+    cerrar archivo
+
+    Si no encontrado:
+        Escribir "Contacto no encontrado."
+    Fin Si
+
+    esperar entrada del usuario
+Fin Función
+
+Función main():
+    opcion: Entero // Variable para almacenar la opción del usuario
+
+    // Menú de la agenda de contactos
+    Hacer
+        limpiar pantalla
+        Escribir "AGENDA DE CONTACTOS"
+        Escribir "1. Agregar contacto"
+        Escribir "2. Ver contactos"
+        Escribir "3. Eliminar contacto"
+        Escribir "4. Buscar contacto"
+        Escribir "5. Salir"
+        Escribir "Elige una opción: "
+        leer opcion // Leer la opción del usuario
+
+        Segun opcion Hacer:
+            Caso 1:
+                agregarContacto() // Agregar un contacto nuevo
+            Caso 2:
+                leerContactos() // Leer y mostrar todos los contactos
+            Caso 3:
+                borrarContacto() // Eliminar un contacto
+            Caso 4:
+                buscarContacto() // Buscar un contacto
+            Caso 5:
+                limpiar pantalla
+                Escribir "Saliendo de la agenda." // Mensaje de salida
+            De Otro modo:
+                Escribir "Opción no válida. Intenta de nuevo." // Mensaje de error por si la opción no es válida
+        Fin Segun
+    Mientras opcion no sea 5 // Repetir hasta que el usuario elija salir
+
+    Retornar 0 // Finalizar el programa
+Fin Función 
